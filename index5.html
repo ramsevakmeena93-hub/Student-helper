@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Registration Portal</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+
+        }
+
+        ;
+
+        /* Overlay for better text visibility */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 15, 40, 0.7);
+            z-index: -1;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(90deg, #001f3f, #004080);
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        header h1 {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 25px;
+        }
+
+        nav ul li a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            transition: color 0.3s, transform 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #66ccff;
+            transform: scale(1.1);
+        }
+
+        /* Main Section */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        form {
+            background: linear-gradient(90deg, #001f3f, #004080);
+            padding: 30px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 1.3s ease-in-out;
+        }
+
+        form div {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #66ccff;
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 12px;
+            border: 1px solid #004080;
+            border-radius: 8px;
+            outline: none;
+            background-color: #f9f9ff;
+            color: #001f3f;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #66ccff;
+            transform: scale(1.02);
+        }
+
+        /* Button */
+        button {
+            background: linear-gradient(90deg, #004080, #001f3f);
+            color: #fff;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        button:hover {
+            background: linear-gradient(90deg, #0059b3, #003366);
+            transform: translateY(-3px);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 51, 0.9);
+            color: #66ccff;
+            font-size: 14px;
+            border-top: 1px solid #003366;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>STUDENT REGISTRATION PORTAL</h1>
+
+        <nav>
+            <ul>
+                <li><a href="#" id="navHome">Home</a></li>
+                <li><a href="#" id="navAbout">About</a></li>
+                <li><a href="#" id="navContact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <form id="studentForm" method="post">
+            <div>
+                <label for="name">Name</label>
+                <input id="name" type="text" name="name" placeholder="Enter Your Name" required>
+            </div>
+            <div>
+                <label for="fatherName">Father's Name</label>
+                <input id="fatherName" type="text" name="fatherName" placeholder="Enter Your Father's Name" required>
+            </div>
+            <div>
+                <label for="motherName">Mother's Name</label>
+                <input id="motherName" type="text" name="motherName" placeholder="Enter Your Mother's Name" required>
+            </div>
+            <div>
+                <label for="phone">Phone Number</label>
+                <input id="phone" type="tel" name="phone" placeholder="Enter Your Phone Number" required>
+            </div>
+            <div>
+                <label for="email">Email</label>
+                <input id="email" type="email" name="email" placeholder="Email ID" required>
+            </div>
+            <div>
+                <label for="address">Address</label>
+                <textarea id="address" name="address" placeholder="Address" rows="3" required></textarea>
+            </div>
+            <div>
+                <label for="course">Select Course</label>
+                <select id="course" name="course" required>
+                    <option value="">Select</option>
+                    <option value="CST">CST</option>
+                    <option value="CSE">CSE</option>
+                    <option value="CSD">CSD</option>
+                    <option value="CSBS">CSBS</option>
+                    <option value="MAC">MAC</option>
+                    <option value="IT">IT</option>
+                </select>
+            </div>
+            <div>
+                <button type="submit">Submit</button>
+            </div>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Student Registration Portal</p>
+    </footer>
+
+    <!-- JavaScript inside HTML -->
+    <script>
+        // Navigation clicks
+        document.getElementById("navHome").addEventListener("click", () => {
+            alert("Welcome to Home Page!");
+        });
+
+        document.getElementById("navAbout").addEventListener("click", () => {
+            alert("This is a Student Registration Portal.");
+        });
+
+        document.getElementById("navContact").addEventListener("click", () => {
+            alert("Contact us at support@portal.com");
+        });
+
+        // Form validation + redirect
+        document.getElementById("studentForm").addEventListener("submit", function (e) {
+            e.preventDefault(); // stop default form submit
+
+            let name = document.getElementById("name").value.trim();
+            let email = document.getElementById("email").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+            let course = document.getElementById("course").value;
+
+            if (name === "" || email === "" || phone === "" || course === "") {
+                alert("Please fill in all required fields!");
+                return;
+            }
+
+            if (!/^[0-9]{10}$/.test(phone)) {
+                alert("Enter a valid 10-digit phone number!");
+                return;
+            }
+
+            alert("✅ Registration Successful!\nThank you " + name + " for registering.");
+
+            // redirect to submitbutton.html after success
+            window.location.href = "sumitbutton3.html";
+        });
+    </script>
+
+</body>
+
+</html>
