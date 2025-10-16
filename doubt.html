@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Doubt Solver • Student Google</title>
+<style>
+  :root{
+    --bg:#021b3a; --card:#04294e; --accent:#66ccff; --muted:#9fb6d9; --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%; margin:0; font-family:Inter,Segoe UI,system-ui,Arial; background:linear-gradient(180deg,var(--bg),#021428); color:#e9f3ff}
+  .wrap{max-width:1100px; margin:28px auto; padding:20px;}
+  header{display:flex; gap:16px; align-items:center; margin-bottom:18px}
+  .logo{
+    display:flex; gap:12px; align-items:center;
+  }
+  .logo .mark{width:56px; height:56px; border-radius:12px; display:grid; place-items:center;
+    background:linear-gradient(135deg,#003a72,var(--accent)); box-shadow:0 6px 18px rgba(0,0,0,0.6); font-weight:800}
+  .logo h1{font-size:18px; margin:0}
+  .lead{color:var(--muted); font-size:13px}
+  .topbar{display:flex; gap:12px; margin-left:auto; align-items:center}
+  .chip{background:var(--glass); padding:8px 12px; border-radius:10px; font-size:13px; color:var(--muted)}
+  main{display:grid; grid-template-columns: 1fr 380px; gap:18px;}
+  /* Search card */
+  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:18px; box-shadow: 0 6px 26px rgba(0,0,0,0.45); border:1px solid rgba(255,255,255,0.03);}
+  .search-row{display:flex; gap:10px; align-items:center}
+  .search-input{flex:1; background:transparent; border:1px solid rgba(255,255,255,0.06); padding:14px 16px; border-radius:10px; color:inherit; font-size:15px; outline:none}
+  .btn{background:linear-gradient(90deg,#0059b3,#003366); padding:11px 14px; border-radius:10px; color:#fff; border:none; cursor:pointer; font-weight:600}
+  .small{font-size:13px; color:var(--muted)}
+  .filters{display:flex; gap:8px; margin-top:12px; align-items:center}
+  .seg{display:flex; gap:6px; background:rgba(255,255,255,0.02); padding:6px; border-radius:10px}
+  .seg button{background:transparent; border:none; padding:8px 12px; border-radius:8px; color:var(--muted); cursor:pointer}
+  .seg button.active{background:rgba(255,255,255,0.03); color:var(--accent); font-weight:700}
+  /* Results */
+  .results{margin-top:16px; display:flex; flex-direction:column; gap:12px}
+  .result-item{background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015)); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.02)}
+  .result-title{font-weight:700; color:#dff3ff}
+  .result-meta{font-size:13px; color:var(--muted); margin-top:6px}
+  .actions{display:flex; gap:8px; margin-top:10px}
+  .link-btn{background:transparent; border:1px solid rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; color:var(--muted); cursor:pointer; font-size:13px}
+  .answer{background:rgba(255,255,255,0.02); padding:12px; border-radius:10px; margin-top:8px; color:#e9f3ff}
+  /* Sidebar */
+  aside .card{position:sticky; top:28px}
+  .saved-list{display:flex; flex-direction:column; gap:8px; margin-top:12px; max-height:320px; overflow:auto}
+  .saved-item{padding:10px; border-radius:8px; background:rgba(255,255,255,0.01); border:1px solid rgba(255,255,255,0.02); font-size:14px}
+  .small-muted{font-size:12px; color:var(--muted)}
+  .divider{height:1px; background:rgba(255,255,255,0.02); margin:12px 0}
+  footer{margin-top:18px; text-align:center; color:var(--muted); font-size:13px}
+  /* Responsive */
+  @media (max-width:980px){ main{grid-template-columns:1fr} aside{order:2} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">
+        <div class="mark">DS</div>
+        <div>
+          <h1>Doubt Solver</h1>
+          <div class="lead">Instant answers for academic & non-academic student questions</div>
+        </div>
+      </div>
+      <div class="topbar">
+        <div class="chip">Built with HTML • CSS • JS</div>
+        <div class="chip small">Local demo</div>
+      </div>
+    </header>
+
+    <main>
+      <section>
+        <div class="card" aria-labelledby="searchLabel">
+          <h2 id="searchLabel">Ask anything</h2>
+          <div style="margin-top:8px" class="small muted">Type your question and press <strong>Ask</strong>. The tool will show best matches and an auto-generated answer if needed.</div>
+
+          <div style="margin-top:12px" class="search-row">
+            <input id="query" class="search-input" placeholder="e.g. What is Big-O notation? Or How to manage time during exams?" />
+            <button id="askBtn" class="btn">Ask</button>
+          </div>
+
+          <div class="filters">
+            <div class="small-muted">Category</div>
+            <div class="seg" role="tablist" aria-label="category">
+              <button data-cat="both" class="active">Both</button>
+              <button data-cat="academic">Academic</button>
+              <button data-cat="non-academic">Non-Academic</button>
+            </div>
+
+            <div style="margin-left:auto" class="small-muted">Tips: use clear keywords for best results</div>
+          </div>
+
+          <div id="results" class="results" aria-live="polite"></div>
+        </div>
+
+        <div style="margin-top:14px" class="card">
+          <h3>Ask an Expert (simulate)</h3>
+          <div class="small-muted">If the assistant can't fully answer, "Ask Expert" will save your question for review (local demo).</div>
+          <div style="margin-top:10px">
+            <input id="expName" class="search-input" placeholder="Your name (optional)" style="margin-bottom:8px"/>
+            <input id="expEmail" class="search-input" placeholder="Your email (optional)" style="margin-bottom:8px"/>
+            <textarea id="expQuestion" rows="4" class="search-input" placeholder="Paste your question here"></textarea>
+            <div style="display:flex; gap:8px; margin-top:8px">
+              <button id="askExpert" class="btn">Submit to Experts</button>
+              <button id="clearSaved" class="link-btn">Clear saved questions</button>
+            </div>
+            <div id="expertMsg" class="small-muted" style="margin-top:8px"></div>
+          </div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="card">
+          <h3>Quick answers & saved</h3>
+          <div class="small-muted">Saved local Qs and resources</div>
+
+          <div class="divider"></div>
+
+          <div>
+            <strong>Search shortcuts</strong>
+            <div style="margin-top:8px" class="small-muted">Open full web search for deeper reading</div>
+            <div style="display:flex; gap:8px; margin-top:8px">
+              <button id="googleBtn" class="link-btn">Google</button>
+              <button id="wikiBtn" class="link-btn">Wikipedia</button>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div>
+            <strong>Saved questions</strong>
+            <div id="savedList" class="saved-list"></div>
+            <div id="noSaved" class="small-muted" style="margin-top:8px">No saved questions yet.</div>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      Tip: This demo uses a local knowledge base and simple smart-matching. For live AI answers, connect this UI to an API.
+    </footer>
+  </div>
+
+<script>
+/* ---------------------------
+   Simple local knowledge base
+   --------------------------- */
+const KB = [
+  {id:1, q:"What is Big-O notation?", a:"Big-O notation describes the upper bound of an algorithm's running time or space requirement in terms of input size. It expresses worst-case growth and ignores constant factors. Example: linear search is O(n), binary search is O(log n).", tags:["academic","cs","algorithms"]},
+  {id:2, q:"How to write an introduction in an essay?", a:"Start with a hook (interesting fact, question), provide 1–2 sentences of context, then state your thesis (main point). Keep it concise (3–5 sentences).", tags:["academic","writing"]},
+  {id:3, q:"How to prepare for exams quickly?", a:"Make a short plan: identify high-weight topics, practice past papers, use active recall (flashcards), teach someone else, and rest well the day before the exam.", tags:["academic","study","productivity"]},
+  {id:4, q:"How to manage stress during college?", a:"Try short daily exercise, maintain sleep schedule, talk with friends/family, break tasks into small steps, and use campus counseling if needed.", tags:["non-academic","wellbeing"]},
+  {id:5, q:"How to create a resume for a fresher?", a:"Include contact info, objective/summary, education, projects, skills, certifications, and keep it one page. Highlight measurable results (e.g., improved X by Y%).", tags:["non-academic","career"]},
+  {id:6, q:"What is polymorphism in OOP?", a:"Polymorphism allows objects to be treated as instances of their parent class while executing child-specific behavior. Types: compile-time (overloading) and run-time (overriding).", tags:["academic","cs","oop"]},
+  {id:7, q:"How to cite a book in APA style?", a:"Format: AuthorLast, A. A. (Year). Title of book. Publisher. Example: Smith, J. (2020). Introduction to Science. Oxford Press.", tags:["academic","citation","writing"]}
+];
+
+/* ---------------------------
+   Utilities: scoring & matching
+   --------------------------- */
+function normalizeText(s){ return s.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim(); }
+
+function scoreMatch(query, text){
+  // Simple token overlap scoring + phrase boost
+  if(!query || !text) return 0;
+  const qTokens = normalizeText(query).split(/\s+/).filter(Boolean);
+  const t = normalizeText(text);
+  let score=0;
+  qTokens.forEach(tok=>{
+    if(t.includes(tok)) score += 2;            // direct token
+    const re = new RegExp('\\b'+tok+'\\b');
+    if(re.test(t)) score += 1;                // word boundary bonus
+  });
+  // phrase match boost
+  if(t.includes(normalizeText(query))) score += 4;
+  return score;
+}
+
+/* ---------------------------
+   Rendering helpers
+   --------------------------- */
+const resultsEl = document.getElementById('results');
+const savedListEl = document.getElementById('savedList');
+const noSavedEl = document.getElementById('noSaved');
+
+function renderResults(items, query){
+  resultsEl.innerHTML = '';
+  if(!items || items.length === 0){
+    // show auto generated answer
+    const gen = generateAnswer(query);
+    const el = document.createElement('div');
+    el.className = 'result-item';
+    el.innerHTML = `<div class="result-title">Auto-generated answer</div>
+      <div class="result-meta">No close match in local library — here's a helpful response and quick links.</div>
+      <div class="answer">${escapeHtml(gen.answer).replace(/\n/g,'<br>')}</div>
+      <div class="actions">
+        <button class="link-btn" onclick="openSearch('${encodeURIComponent(query)}','google')">Search Google</button>
+        <button class="link-btn" onclick="openSearch('${encodeURIComponent(query)}','wiki')">Search Wikipedia</button>
+        <button class="link-btn" onclick="saveQuestion('${escapeHtml(query)}')">Save this question</button>
+      </div>`;
+    resultsEl.appendChild(el);
+    return;
+  }
+
+  items.forEach(it=>{
+    const el = document.createElement('div');
+    el.className = 'result-item';
+    const snippet = it.a.length>280 ? it.a.slice(0,280)+'…' : it.a;
+    el.innerHTML = `<div class="result-title">${escapeHtml(it.q)}</div>
+      <div class="result-meta">Category: ${it.tags.join(', ')}</div>
+      <div class="answer">${escapeHtml(snippet).replace(/\n/g,'<br>')}</div>
+      <div class="actions">
+        <button class="link-btn" onclick='showFull(${it.id})'>Show full</button>
+        <button class="link-btn" onclick="openSearch('${encodeURIComponent(it.q)}','google')">Search web</button>
+        <button class="link-btn" onclick="saveQuestion('${escapeHtml(it.q)}')">Save question</button>
+      </div>`;
+    resultsEl.appendChild(el);
+  });
+}
+
+function showFull(id){
+  const item = KB.find(k=>k.id===id);
+  if(!item) return;
+  const el = document.createElement('div');
+  el.className = 'result-item';
+  el.innerHTML = `<div class="result-title">${escapeHtml(item.q)}</div>
+    <div class="result-meta">Category: ${item.tags.join(', ')}</div>
+    <div class="answer">${escapeHtml(item.a).replace(/\n/g,'<br>')}</div>
+    <div class="actions">
+      <button class="link-btn" onclick="openSearch('${encodeURIComponent(item.q)}','google')">Search web</button>
+      <button class="link-btn" onclick="saveQuestion('${escapeHtml(item.q)}')">Save question</button>
+    </div>`;
+  // insert at top
+  resultsEl.insertBefore(el, resultsEl.firstChild);
+}
+
+/* ---------------------------
+   Answer generation (simple)
+   --------------------------- */
+function generateAnswer(query){
+  // very basic heuristic answer generator:
+  // - if query asks "how to" -> provide step list
+  // - if query contains "what is" -> short definition style
+  // - otherwise provide guidance + links
+  const q = (query||'').toLowerCase();
+  if(!q || q.trim().length===0) return {answer:'Please type a question so I can help you.'};
+
+  if(q.startsWith('how to') || q.startsWith('how do') || q.includes('how can i') || q.includes('steps')){
+    return {answer:`Steps to approach this:\n1. Clearly define the goal of your task/question.\n2. Break the problem into smaller steps and prioritize.\n3. Search for a trusted tutorial or example (use Google/Wikipedia).\n4. Practice by doing a small example and test your result.\n5. Ask peers/tutors and iterate.`};
+  }
+  if(q.startsWith('what is') || q.startsWith('define') || q.includes('meaning of')){
+    const main = q.replace(/^(what is|define|meaning of)\s*/,'');
+    return {answer:`${capitalizeFirst(main)} — here's a short explanation: \nProvide a concise definition, then list key points and an example if useful. For more info, click "Search Google" or "Search Wikipedia" for reliable sources.`};
+  }
+
+  // fallback: give tips
+  return {answer:`I couldn't find an exact match in the local library, but here's how to proceed:\n• Rephrase your question with specific keywords.\n• Mention the course or topic (e.g., 'Data Structures - Big O').\n• Use the Google/Wikipedia shortcuts below to find articles and tutorials.\nIf you'd like, save this question and ask an expert.`};
+}
+
+/* ---------------------------
+   Event logic
+   --------------------------- */
+const askBtn = document.getElementById('askBtn');
+const queryInput = document.getElementById('query');
+const catButtons = Array.from(document.querySelectorAll('.seg button'));
+let currentCat = 'both';
+
+catButtons.forEach(b=>{
+  b.addEventListener('click', ()=>{
+    catButtons.forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    currentCat = b.dataset.cat;
+  });
+});
+
+function searchKB(query){
+  if(!query || query.trim()==='') return [];
+  // score every KB entry
+  const scored = KB.map(k=>({
+    ...k,
+    score: scoreMatch(query, k.q) + scoreMatch(query, k.a)
+  })).filter(x=>x.score>0);
+
+  // filter by category
+  const filtered = scored.filter(it=>{
+    if(currentCat === 'both') return true;
+    if(currentCat === 'academic') return it.tags.some(t=>t.toLowerCase().includes('academic') || t==='cs' || t==='writing' || t==='oop' || t==='algorithms' || t==='citation' || t==='study');
+    if(currentCat === 'non-academic') return it.tags.some(t=>t.toLowerCase().includes('non') || t==='career' || t==='wellbeing');
+    return true;
+  });
+
+  // sort by score desc
+  filtered.sort((a,b)=>b.score - a.score);
+  return filtered.slice(0,6);
+}
+
+function ask(){
+  const q = queryInput.value.trim();
+  if(!q){
+    alert('Please type your question.');
+    return;
+  }
+  const matches = searchKB(q);
+  renderResults(matches, q);
+}
+
+/* ---------------------------
+   Saving questions (localStorage)
+   --------------------------- */
+function loadSaved(){
+  const raw = localStorage.getItem('ds_saved') || '[]';
+  try{
+    return JSON.parse(raw);
+  }catch(e){
+    return [];
+  }
+}
+function saveToLocal(list){
+  localStorage.setItem('ds_saved', JSON.stringify(list));
+  renderSaved();
+}
+function saveQuestion(q){
+  const list = loadSaved();
+  list.unshift({q, at:new Date().toISOString()});
+  saveToLocal(list);
+  document.getElementById('expertMsg').textContent = 'Saved locally.';
+}
+function renderSaved(){
+  const list = loadSaved();
+  savedListEl.innerHTML = '';
+  if(!list || list.length===0){
+    noSavedEl.style.display = 'block';
+    return;
+  }
+  noSavedEl.style.display = 'none';
+  list.slice(0,50).forEach((s,idx)=>{
+    const el = document.createElement('div');
+    el.className = 'saved-item';
+    el.innerHTML = `<div style="display:flex; justify-content:space-between; gap:8px">
+      <div style="flex:1"><strong>${escapeHtml(s.q)}</strong><div class="small-muted" style="margin-top:6px">${new Date(s.at).toLocaleString()}</div></div>
+      <div style="display:flex; flex-direction:column; gap:6px; margin-left:10px">
+        <button class="link-btn" onclick="document.getElementById('query').value='${escapeHtml(s.q)}'; ask();">Ask</button>
+        <button class="link-btn" onclick="removeSaved(${idx})">Remove</button>
+      </div>
+    </div>`;
+    savedListEl.appendChild(el);
+  });
+}
+function removeSaved(idx){
+  const list = loadSaved();
+  list.splice(idx,1);
+  saveToLocal(list);
+}
+
+/* ---------------------------
+   Ask expert (simulate)
+   --------------------------- */
+document.getElementById('askExpert').addEventListener('click', ()=>{
+  const name = document.getElementById('expName').value.trim();
+  const email = document.getElementById('expEmail').value.trim();
+  const q = document.getElementById('expQuestion').value.trim();
+  if(!q){ alert('Please paste the question to submit.'); return; }
+  // store in localStorage under 'ds_expert'
+  const ex = JSON.parse(localStorage.getItem('ds_expert')||'[]');
+  ex.unshift({name, email, q, at:new Date().toISOString()});
+  localStorage.setItem('ds_expert', JSON.stringify(ex));
+  document.getElementById('expertMsg').textContent = 'Submitted locally for review. (demo)';
+  document.getElementById('expQuestion').value='';
+});
+
+/* ---------------------------
+   Web search helpers
+   --------------------------- */
+function openSearch(qEncoded, type){
+  if(!qEncoded) return;
+  let url = '';
+  if(type==='google') url = `https://www.google.com/search?q=${qEncoded}`;
+  else if(type==='wiki') url = `https://en.wikipedia.org/w/index.php?search=${qEncoded}`;
+  window.open(url, '_blank');
+}
+document.getElementById('googleBtn').addEventListener('click', ()=>{
+  const q = encodeURIComponent(document.getElementById('query').value || 'study resources for students');
+  openSearch(q,'google');
+});
+document.getElementById('wikiBtn').addEventListener('click', ()=>{
+  const q = encodeURIComponent(document.getElementById('query').value || 'student resources');
+  openSearch(q,'wiki');
+});
+
+/* ---------------------------
+   Extra UI bindings
+   --------------------------- */
+askBtn.addEventListener('click', ask);
+queryInput.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') ask(); });
+document.getElementById('clearSaved').addEventListener('click', ()=>{
+  if(confirm('Clear all saved questions?')){ localStorage.removeItem('ds_saved'); renderSaved(); }
+});
+
+/* ---------------------------
+   Small helpers
+   --------------------------- */
+function escapeHtml(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function capitalizeFirst(s){ if(!s) return s; return s.charAt(0).toUpperCase() + s.slice(1); }
+
+/* ---------------------------
+   Init
+   --------------------------- */
+renderSaved();
+renderResults([], '');
+</script>
+</body>
+</html>
